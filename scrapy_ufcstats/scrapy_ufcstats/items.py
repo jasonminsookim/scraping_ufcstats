@@ -15,3 +15,5 @@ class ScrapyUfcstatsItem(scrapy.Item):
     fighter_2_nn = scrapy.Field()
     winner = scrapy.Field()
     date = scrapy.Field()
+    location = scrapy.Field()
+    attendance = scrapy.Field()

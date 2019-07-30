@@ -30,19 +30,27 @@ class UfcstatsSpider(Spider):
         date = pendulum.datetime(int(date[2]),
                                  datetime.strptime(date[0], '%B').month,
                                  int(re.sub("[^0-9]", "", date[1])))
-        print(date)
-        # Add location
 
+        # Add location
+        location = response.xpath("//section[@class='b-statistics__section_details']//"
+                                  "li[2]").get().split("</i>\n\n")[1]\.replace('\n', '').replace('</li>', '').strip()
+
+        print(location)
         # Add attendance
+        attendance = response.xpath("//i[contains(text(),'Attendance:')]")
 
         # Fetch all fight urls from each event
         for fight_url in response.css('a.b-flag_style_green::attr(href)').getall():
-            yield Request(fight_url, callback=self.parse_fight, meta={'date': date})
+            yield Request(fight_url,
+                          callback=self.parse_fight,
+                          meta={'date': date, 'location': location, 'attendance': attendance})
 
 
     def parse_fight(self, response):
         # Append meta data from previous parsing layer
         date = response.meta['date']
+        location = response.meta['location']
+        attendance = response.meta['attendance']
 
         # Append data from each fight
         items = ScrapyUfcstatsItem()
@@ -80,6 +88,7 @@ class UfcstatsSpider(Spider):
         items['fighter_2'] = fighter_2
         items['fighter_2_nn'] = fighter_2_nn
         items['winner'] = winner
+        items['location'] = location
+        items['attendance'] = attendance
 
         yield items
-
