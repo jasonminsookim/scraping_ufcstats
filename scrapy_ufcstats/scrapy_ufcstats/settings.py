@@ -14,7 +14,7 @@ BOT_NAME = 'scrapy_ufcstats'
 SPIDER_MODULES = ['scrapy_ufcstats.spiders']
 NEWSPIDER_MODULE = 'scrapy_ufcstats.spiders'
 
-CLOSESPIDER_PAGECOUNT = 50  # so end after 50 pages have been crawled
+CLOSESPIDER_PAGECOUNT = 15  # so end after 50 pages have been crawled
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'scrapy_ufcstats (+http://www.yourdomain.com)'
@@ -49,18 +49,23 @@ CONCURRENT_REQUESTS = 50
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
 #    'scrapy_ufcstats.middlewares.ScrapyUfcstatsSpiderMiddleware': 543,
-#}
+
+RANDOM_UA_PER_PROXY = True
+
+
+# Retry many times since proxies often fail
+RETRY_TIMES = 50
+# Retry on most error codes since proxies fail for different reasons
+RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
 
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
     'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
 }
 
-RETRY_HTTP_CODES = [404]
-RETRY_TIMES = 10
 
 
-DOWNLOAD_DELAY = 0.50
+DOWNLOAD_DELAY = .5
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
