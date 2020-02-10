@@ -47,7 +47,7 @@ dependencies:
   - python=3.7.6=h359304d_2
   - queuelib=1.5.0=py37_0
   - readline=7.0=h1de35cc_5
-  - scrapy=1.8.0=py37h4a8c4bd_0
+  - scrapy_ufcstats=1.8.0=py37h4a8c4bd_0
   - service_identity=18.1.0=py_0
   - setuptools=45.1.0=py37_0
   - six=1.14.0=py37_0

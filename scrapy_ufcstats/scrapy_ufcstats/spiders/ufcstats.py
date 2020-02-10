@@ -40,7 +40,7 @@ class UfcstatsSpider(Spider):
                                     "//li[3]").get().split("Attendance:\n      </i>\n")[1].replace('\n    </li>',
                                                                                                    '').strip()
         # Changes the type from string numeric e.g. '10,513' to int.
-        attendance = float(attendance.replace(',',''))
+        attendance = int(attendance.replace(',',''))
 
         # Fetches all fight urls from each event.
         for fight_url in response.css('a.b-flag_style_green::attr(href)').getall():
@@ -68,9 +68,9 @@ class UfcstatsSpider(Spider):
         nicknames = response.xpath("//p[@class='b-fight-details__person-title']/text()").extract()
 
         # Data wrangles names.
-        fighter_1 = fighters[0]
+        fighter_1 = fighters[0].strip()
         fighter_1_nn = nicknames[0].strip()
-        fighter_2 = fighters[1]
+        fighter_2 = fighters[1].strip()
         fighter_2_nn = nicknames[1].strip()
 
         # Appends winner.
@@ -93,39 +93,46 @@ class UfcstatsSpider(Spider):
         fight_stats_table = response.xpath("//p[@class='b-fight-details__table-text']").extract()
         for ind,stat in enumerate(fight_stats_table, start=0):
             if ind == 2:
-                r1_f1_kd = re.sub('[^0-9]', '', stat)
+                f1_r1_kd = int(re.sub('[^0-9]', '', stat))
             elif ind == 3:
-                r1_f2_kd = re.sub('[^0-9]', '', stat)
+                f2_r1_kd = int(re.sub('[^0-9]', '', stat))
             elif ind == 4:
-                r1_f1_ss_l = re.sub('[^0-9]', '', stat.split('of')[0])
-                r1_f1_ss_a = re.sub('[^0-9]', '', stat.split('of')[1])
+                f1_r1_ss_l = int(re.sub('[^0-9]', '', stat.split('of')[0]))
+                f1_r1_ss_a = int(re.sub('[^0-9]', '', stat.split('of')[1]))
             elif ind == 5:
-                r1_f2_ss_l = re.sub('[^0-9]', '', stat.split('of')[0])
-                r1_f2_ss_a = re.sub('[^0-9]', '', stat.split('of')[1])
-
-
-
-
-
-
-
+                f2_r1_ss_l = int(re.sub('[^0-9]', '', stat.split('of')[0]))
+                f2_r1_ss_a = int(re.sub('[^0-9]', '', stat.split('of')[1]))
+            elif ind == 8:
+                f1_r1_s_l = int(re.sub('[^0-9]', '', stat.split('of')[0]))
+                f1_r1_s_a = int(re.sub('[^0-9]', '', stat.split('of')[1]))
+            elif ind == 9:
+                f2_r1_s_l = int(re.sub('[^0-9]', '', stat.split('of')[0]))
+                f2_r1_s_a = int(re.sub('[^0-9]', '', stat.split('of')[1]))
 
         # Itemizes the extracted data
-        items['date'] = date
         items['fighter_1'] = fighter_1
         items['fighter_1_nn'] = fighter_1_nn
         items['fighter_2'] = fighter_2
         items['fighter_2_nn'] = fighter_2_nn
         items['winner'] = winner
         items['rounds'] = rounds
+
         # Itemizes the round by round data.
-        items['r1_f1_kd'] = r1_f1_kd
-        items['r1_f2_kd'] = r1_f2_kd
-        items['r1_f1_ss_l'] = r1_f1_ss_l
-        items['r1_f1_ss_a'] = r1_f1_ss_a
-        items['r1_f2_ss_l'] = r1_f2_ss_l
-        items['r1_f2_ss_a'] = r1_f2_ss_a
+        items['f1_r1_kd'] = f1_r1_kd
+        items['f2_r1_kd'] = f2_r1_kd
+        items['f1_r1_ss_l'] = f1_r1_ss_l
+        items['f1_r1_ss_a'] = f1_r1_ss_a
+        items['f2_r1_ss_l'] = f2_r1_ss_l
+        items['f2_r1_ss_a'] = f2_r1_ss_a
+        items['f2_r1_ss_a'] = f2_r1_ss_a
+        items['f1_r1_s_l'] = f1_r1_s_l
+        items['f1_r1_s_a'] = f1_r1_s_a
+        items['f2_r1_s_l'] = f2_r1_s_l
+        items['f2_r1_s_a'] = f2_r1_s_a
+
+
         # Itemizes general even information
+        items['date'] = date
         items['location'] = location
         items['attendance'] = attendance
 

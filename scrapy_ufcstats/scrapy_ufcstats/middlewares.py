@@ -10,7 +10,7 @@ from scrapy import signals
 
 class ScrapyUfcstatsSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
-    # scrapy acts as if the spider middleware does not modify the
+    # scrapy_ufcstats acts as if the spider middleware does not modify the
     # passed objects.
 
     @classmethod
@@ -58,7 +58,7 @@ class ScrapyUfcstatsSpiderMiddleware(object):
 
 class ScrapyUfcstatsDownloaderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
-    # scrapy acts as if the downloader middleware does not modify the
+    # scrapy_ufcstats acts as if the downloader middleware does not modify the
     # passed objects.
 
     @classmethod

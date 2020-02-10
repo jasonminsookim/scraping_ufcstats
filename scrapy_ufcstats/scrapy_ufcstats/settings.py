@@ -14,7 +14,7 @@ BOT_NAME = 'scrapy_ufcstats'
 SPIDER_MODULES = ['scrapy_ufcstats.spiders']
 NEWSPIDER_MODULE = 'scrapy_ufcstats.spiders'
 
-CLOSESPIDER_PAGECOUNT = 15  # so end after 50 pages have been crawled
+CLOSESPIDER_PAGECOUNT = 10  # so end after 50 pages have been crawled
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'scrapy_ufcstats (+http://www.yourdomain.com)'
@@ -59,7 +59,7 @@ RETRY_TIMES = 50
 RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
 
 DOWNLOADER_MIDDLEWARES = {
-    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    'scrapy_ufcstats.downloadermiddlewares.useragent.UserAgentMiddleware': None,
     'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
 }
 
@@ -75,7 +75,7 @@ DOWNLOAD_DELAY = .5
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 #EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
+#    'scrapy_ufcstats.extensions.telnet.TelnetConsole': None,
 #}
 
 # Configure item pipelines
@@ -103,4 +103,4 @@ DOWNLOAD_DELAY = .5
 #HTTPCACHE_EXPIRATION_SECS = 0
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
-#HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+#HTTPCACHE_STORAGE = 'scrapy_ufcstats.extensions.httpcache.FilesystemCacheStorage'
