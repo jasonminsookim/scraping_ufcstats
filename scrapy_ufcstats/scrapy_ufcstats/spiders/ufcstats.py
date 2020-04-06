@@ -65,13 +65,16 @@ class UfcstatsSpider(Spider):
         # Initalizes items to add the scraped data into.
         items = ScrapyUfcstatsItem()
 
-        # Extract url data from response.
+        # Parses url data from response.
         items['url'] = response.url
 
         # Extracts meta data from previous parsing layer.
         items['date'] = response.meta['date']
         items['location'] = response.meta['location']
         items['attendance'] = response.meta['attendance']
+
+        # Parses the weight division for the fight.
+        items['division'] = response.xpath("//i[@class='b-fight-details__fight-title']").extract()[0].split('\n')[-2].strip()
 
         # Extracts fighter name.
         fighters = response.xpath("//h3[@class='b-fight-details__person-name']//a/text()").extract()
@@ -118,7 +121,7 @@ class UfcstatsSpider(Spider):
         # Obtains the all important stats table.
         fight_stats_table = response.xpath("//p[@class='b-fight-details__table-text']").extract()
 
-        # Extracts the total fight stats
+        # Extracts the totals and significant strikes tables
         for ind,stat in enumerate(fight_stats_table, start=0):
             # Set fighter number.
             if ind % 2 == 0:
@@ -132,32 +135,58 @@ class UfcstatsSpider(Spider):
             elif ind == 1:
                 items['fighter_2_detail_url'] = stat.split('href')[1].split('"')[1]
 
-            # Set statistic type (total or round by round)
-            time_type_ind = int(ind / 20)
-            if time_type_ind == 0:
-                time_type = 'tot'
+
+            if ind <= 20 * (items['rounds'] + 1):
+                # Sets a base index because there are 10 total columns with two rows of data for each fighter.
+                base_ind = ind % 20
+
+                # Set statistic type (total or round by round)
+                time_type_ind = int(ind / 20)
+                if time_type_ind == 0:
+                    time_type = 'tot'
+                else:
+                    time_type = f'r{time_type_ind}'
+
+                # Parses the totals table.
+                if 2 <= base_ind <= 3:
+                    items[f'{fighter_num}_{time_type}_kd'] = int(re.sub('[^0-9]', '', stat))
+                elif 4 <= base_ind <= 5:
+                    items[f'{fighter_num}_{time_type}_ss_l'], items[f'{fighter_num}_tot_ss_a'] = self.extract_number_of(stat)
+                elif 8 <= base_ind <= 9:
+                    items[f'{fighter_num}_{time_type}_s_l'], items[f'{fighter_num}_tot_s_a'] = self.extract_number_of(stat)
+                elif 10 <= base_ind <= 11:
+                    items[f'{fighter_num}_{time_type}_td_l'], items[f'{fighter_num}_tot_td_a'] = self.extract_number_of(stat)
+                elif 14 <= base_ind <= 15:
+                    items[f'{fighter_num}_{time_type}_sub_a'] = int(re.sub('[^0-9]', '', stat))
+                elif 16 <= base_ind <= 17:
+                    items[f'{fighter_num}_{time_type}_pass'] = int(re.sub('[^0-9]', '', stat))
+                elif 18 <= base_ind <= 19:
+                    items[f'{fighter_num}_{time_type}_rev'] = int(re.sub('[^0-9]', '', stat))
+
             else:
-                time_type = f'r{time_type_ind}'
+                # Sets a base index because there are 9 total columns with two rows of data for each fighter.
+                base_ind = (ind - (20 * (items['rounds'] + 1))) % 18
 
-            # Set a base index so that it runs iteratively for each round.
-            base_ind = ind % 20
-            if 2 <= base_ind <= 3:
-                items[f'{fighter_num}_{time_type}_kd'] = int(re.sub('[^0-9]', '', stat))
-            elif 4 <= base_ind <= 5:
-                items[f'{fighter_num}_{time_type}_ss_l'], items[f'{fighter_num}_tot_ss_a'] = self.extract_number_of(stat)
-            elif 8 <= base_ind <= 9:
-                items[f'{fighter_num}_{time_type}_s_l'], items[f'{fighter_num}_tot_s_a'] = self.extract_number_of(stat)
-            elif 10 <= base_ind <= 11:
-                items[f'{fighter_num}_{time_type}_td_l'], items[f'{fighter_num}_tot_td_a'] = self.extract_number_of(stat)
-            elif 14 <= base_ind <= 15:
-                items[f'{fighter_num}_{time_type}_sub_a'] = int(re.sub('[^0-9]', '', stat))
-            elif 16 <= base_ind <= 17:
-                items[f'{fighter_num}_{time_type}_pass'] = int(re.sub('[^0-9]', '', stat))
-            elif 18 <= base_ind <= 19:
-                items[f'{fighter_num}_{time_type}_rev'] = int(re.sub('[^0-9]', '', stat))
+                # Set statistic type (total or round by round)
+                time_type_ind = int((ind - (20 * (items['rounds'] + 1)))/ 18)
+                if time_type_ind == 0:
+                    time_type = 'tot'
+                else:
+                    time_type = f'r{time_type_ind}'
 
-            if(ind >= 20 * (items['rounds'] + 1)):
-                break
+                 # Parses the significant strikes table.
+                if 6 <= base_ind <= 7:
+                    items[f'{fighter_num}_{time_type}_ss_head_l'], items[f'{fighter_num}_{time_type}_ss_head_a'] = self.extract_number_of(stat)
+                elif 8 <= base_ind <= 9:
+                    items[f'{fighter_num}_{time_type}_ss_body_l'], items[f'{fighter_num}_{time_type}_ss_body_a'] = self.extract_number_of(stat)
+                elif 10 <= base_ind <= 11:
+                    items[f'{fighter_num}_{time_type}_ss_leg_l'], items[f'{fighter_num}_{time_type}_ss_leg_a'] = self.extract_number_of(stat)
+                elif 12 <= base_ind <= 13:
+                    items[f'{fighter_num}_{time_type}_distance_l'], items[f'{fighter_num}_{time_type}_distance_a'] = self.extract_number_of(stat)
+                elif 14 <= base_ind <= 15:
+                    items[f'{fighter_num}_{time_type}_clinch_l'], items[f'{fighter_num}_{time_type}_clinch_a'] = self.extract_number_of(stat)
+                elif 16 <= base_ind <= 17:
+                    items[f'{fighter_num}_{time_type}_ground_l'], items[f'{fighter_num}_{time_type}_ground_a'] = self.extract_number_of(stat)
 
 
         yield items
