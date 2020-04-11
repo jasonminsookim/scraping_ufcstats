@@ -18,6 +18,8 @@ class ScrapyUfcstatsItem(scrapy.Item):
     fighter_2_detail_url = scrapy.Field()
     winner = scrapy.Field()
     win_method = scrapy.Field()
+    win_method_details = scrapy.Field()
+    referee = scrapy.Field()
     date = scrapy.Field()
     rounds = scrapy.Field()
     time = scrapy.Field()

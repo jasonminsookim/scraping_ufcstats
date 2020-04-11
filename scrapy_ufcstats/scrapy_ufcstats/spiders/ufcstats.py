@@ -97,15 +97,26 @@ class UfcstatsSpider(Spider):
                                            "/div[1]/i/text()").extract()
         fighter_1_outcome = fighter_1_outcome[0].strip()
         if fighter_1_outcome == "W":
-            items['winner']  = items['fighter_1']
+            items['winner'] = items['fighter_1']
+        elif fighter_1_outcome == 'L':
+            items['winner'] = items['fighter_2']
         else:
-            items['winner']  = items['fighter_2']
+            items['winner'] = 'Draw'
 
         # Extracts the winning method.
         items['win_method'] = response.xpath("//body[@class='b-page']/section[@class='b-statistics__section_details']"
                               "/div[@class='l-page__container']/div[@class='b-fight-details']"
                               "/div[@class='b-fight-details__fight']/div[@class='b-fight-details__content']/p[1]/i[1]"
                               "/i[2]/text()").extract()[0].strip()
+
+        # Parses the winning method details.
+        items['win_method_details'] = response.xpath("//body//div//div//div//p[2]").extract()[0]
+        items['win_method_details'] = re.sub(r'<.+?>', '', items['win_method_details'])
+        items['win_method_details'] = items['win_method_details'].replace('\n', '').replace('Details:', '').replace('  ', '')
+
+
+        # Parses the referee for the fight.
+        items['referee'] = response.xpath("//body/section/div/div/div/div/p[1]").extract()[0].split("Referee:")[1].split('\n')[-4].strip()
 
 
         # Extracts number of rounds fought.
@@ -151,11 +162,11 @@ class UfcstatsSpider(Spider):
                 if 2 <= base_ind <= 3:
                     items[f'{fighter_num}_{time_type}_kd'] = int(re.sub('[^0-9]', '', stat))
                 elif 4 <= base_ind <= 5:
-                    items[f'{fighter_num}_{time_type}_ss_l'], items[f'{fighter_num}_tot_ss_a'] = self.extract_number_of(stat)
+                    items[f'{fighter_num}_{time_type}_ss_l'], items[f'{fighter_num}_{time_type}_ss_a'] = self.extract_number_of(stat)
                 elif 8 <= base_ind <= 9:
-                    items[f'{fighter_num}_{time_type}_s_l'], items[f'{fighter_num}_tot_s_a'] = self.extract_number_of(stat)
+                    items[f'{fighter_num}_{time_type}_s_l'], items[f'{fighter_num}_{time_type}_s_a'] = self.extract_number_of(stat)
                 elif 10 <= base_ind <= 11:
-                    items[f'{fighter_num}_{time_type}_td_l'], items[f'{fighter_num}_tot_td_a'] = self.extract_number_of(stat)
+                    items[f'{fighter_num}_{time_type}_td_l'], items[f'{fighter_num}_{time_type}_td_a'] = self.extract_number_of(stat)
                 elif 14 <= base_ind <= 15:
                     items[f'{fighter_num}_{time_type}_sub_a'] = int(re.sub('[^0-9]', '', stat))
                 elif 16 <= base_ind <= 17:
