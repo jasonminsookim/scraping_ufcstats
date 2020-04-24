@@ -4,10 +4,24 @@ from ..items import ScrapyUfcstatsItem
 from datetime import datetime
 import pendulum
 import re
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.linkextractors import LinkExtractor
 
 
 class UfcstatsSpider(Spider):
     name = 'fights'
+
+    start_urls = ['http://www.ufcstats.com/statistics/events/completed?page=all']
+    allowed_domains = ["ufcstats.com"]
+    rules = [  # Get all links on start url
+          Rule(
+            link_extractor=LinkExtractor(
+                deny=r"\?",
+            ),
+            follow=False,
+            callback="parse_page",
+        )
+    ]
 
     def extract_number_of(self, stat_string):
         pre_of = int(re.sub('[^0-9]', '', stat_string.split('of')[0]))

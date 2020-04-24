@@ -14,7 +14,7 @@ BOT_NAME = 'scrapy_ufcstats'
 SPIDER_MODULES = ['scrapy_ufcstats.spiders']
 NEWSPIDER_MODULE = 'scrapy_ufcstats.spiders'
 
-CLOSESPIDER_PAGECOUNT = 10  # so end after 50 pages have been crawled
+# CLOSESPIDER_PAGECOUNT = 10  # so end after 50 pages have been crawled
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'scrapy_ufcstats (+http://www.yourdomain.com)'
@@ -23,7 +23,7 @@ CLOSESPIDER_PAGECOUNT = 10  # so end after 50 pages have been crawled
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 15
+CONCURRENT_REQUESTS = 30
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -99,8 +99,6 @@ DOWNLOAD_DELAY = 1
 
 # Enable and configure HTTP caching (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
-#HTTPCACHE_ENABLED = True
-#HTTPCACHE_EXPIRATION_SECS = 0
-#HTTPCACHE_DIR = 'httpcache'
-#HTTPCACHE_IGNORE_HTTP_CODES = []
-#HTTPCACHE_STORAGE = 'scrapy_ufcstats.extensions.httpcache.FilesystemCacheStorage'
+HTTPCACHE_ENABLED = True
+HTTPCACHE_EXPIRATION_SECS = 60 * 60 * 24 * 7
+HTTPCACHE_DIR = 'httpcache'
