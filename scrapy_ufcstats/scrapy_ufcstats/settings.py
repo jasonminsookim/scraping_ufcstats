@@ -14,7 +14,7 @@ BOT_NAME = 'scrapy_ufcstats'
 SPIDER_MODULES = ['scrapy_ufcstats.spiders']
 NEWSPIDER_MODULE = 'scrapy_ufcstats.spiders'
 
-# CLOSESPIDER_PAGECOUNT = 10  # so end after 50 pages have been crawled
+CLOSESPIDER_PAGECOUNT = 10  # so end after 50 pages have been crawled
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'scrapy_ufcstats (+http://www.yourdomain.com)'
