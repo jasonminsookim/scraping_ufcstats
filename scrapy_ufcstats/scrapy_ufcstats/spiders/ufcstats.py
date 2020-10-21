@@ -62,11 +62,14 @@ class UfcstatsSpider(Spider):
                                   "li[2]").get().split("</i>\n\n")[1].replace('\n', '').replace('</li>', '').strip()
 
         # Appends attendance.
-        attendance = response.xpath("//section[@class='b-statistics__section_details']"
-                                    "//li[3]").get().split("Attendance:\n      </i>\n")[1].replace('\n    </li>',
-                                                                                                   '').strip()
-        # Changes the type from string numeric e.g. '10,513' to int.
-        attendance = attendance.replace(',','')
+        attendance_ele = response.xpath("//section[@class='b-statistics__section_details']//li[3]")
+        if len(attendance_ele > 0):
+            attendance = attendance_ele.get().split("Attendance:\n      </i>\n")[1].replace('\n    </li>', '').strip()
+            # Changes the type from string numeric e.g. '10,513' to int.
+            attendance = attendance.replace(',', '')
+        else:
+            attendance = 0
+
 
         # Fetches all fight urls from each event.
         for fight_url in response.css('a.b-flag_style_green::attr(href)').getall():

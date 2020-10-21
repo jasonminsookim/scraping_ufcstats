@@ -1,9 +1,7 @@
 /.idea
 
-
-
 /venv/
 
+scrapy_ufcstats/.scrapy
 
-/.scrapy
-
+scraped_data/
